@@ -55,7 +55,7 @@ function exportGuestsCsv(guests) {
   URL.revokeObjectURL(url);
 }
 
-const TH = "text-left text-[#9a8f82] tracking-widest uppercase py-2 pr-4 whitespace-nowrap font-normal";
+const TH = "text-left text-[#8a9ab5] tracking-widest uppercase py-2 pr-4 whitespace-nowrap font-normal";
 const TD = "py-2.5 pr-4 whitespace-nowrap";
 const ACTION_BTN = "font-mono text-[10px] tracking-widest uppercase transition-colors";
 
@@ -64,18 +64,18 @@ const ACTION_BTN = "font-mono text-[10px] tracking-widest uppercase transition-c
 // ─────────────────────────────────────────────
 function GuestEditRow({ guest, editForm, setEditForm, savingGuest, onSave, onCancelEdit }) {
   return (
-    <tr className="border-b border-[#2e2920]/40 bg-[#181612]/80">
+    <tr className="border-b border-[#1e2438]/40 bg-[#131520]/80">
       <td className="py-2 pr-3">
         <input value={editForm.firstName} onChange={(e) => setEditForm((f) => ({ ...f, firstName: e.target.value }))}
-          className="w-24 bg-[#0f0e0c] border border-[#2e2920] text-[#f5ede0] rounded px-2 py-1 font-mono text-xs focus:border-[#c9a96e] outline-none" />
+          className="w-24 bg-[#0c0d10] border border-[#1e2438] text-[#edf0f5] rounded px-2 py-1 font-mono text-xs focus:border-[#8C2038] outline-none" />
       </td>
       <td className="py-2 pr-3">
         <input value={editForm.middleName} onChange={(e) => setEditForm((f) => ({ ...f, middleName: e.target.value }))}
-          className="w-24 bg-[#0f0e0c] border border-[#2e2920] text-[#f5ede0] rounded px-2 py-1 font-mono text-xs focus:border-[#c9a96e] outline-none" />
+          className="w-24 bg-[#0c0d10] border border-[#1e2438] text-[#edf0f5] rounded px-2 py-1 font-mono text-xs focus:border-[#8C2038] outline-none" />
       </td>
       <td className="py-2 pr-3">
         <input value={editForm.lastName} onChange={(e) => setEditForm((f) => ({ ...f, lastName: e.target.value }))}
-          className="w-24 bg-[#0f0e0c] border border-[#2e2920] text-[#f5ede0] rounded px-2 py-1 font-mono text-xs focus:border-[#c9a96e] outline-none" />
+          className="w-24 bg-[#0c0d10] border border-[#1e2438] text-[#edf0f5] rounded px-2 py-1 font-mono text-xs focus:border-[#8C2038] outline-none" />
       </td>
       <td className="py-2 pr-3">
         <button onClick={() => setEditForm((f) => ({ ...f, attending: !f.attending }))}
@@ -85,19 +85,19 @@ function GuestEditRow({ guest, editForm, setEditForm, savingGuest, onSave, onCan
       </td>
       <td className="py-2 pr-3">
         <button onClick={() => setEditForm((f) => ({ ...f, hasOwnCar: !f.hasOwnCar }))}
-          className={`text-[10px] font-mono px-2 py-0.5 rounded border transition-colors ${editForm.hasOwnCar ? "border-[#c9a96e]/50 text-[#c9a96e] bg-[#c9a96e]/10" : "border-[#2e2920] text-[#7a6f63]"}`}>
+          className={`text-[10px] font-mono px-2 py-0.5 rounded border transition-colors ${editForm.hasOwnCar ? "border-[#8C2038]/50 text-[#8C2038] bg-[#8C2038]/10" : "border-[#1e2438] text-[#6b7a90]"}`}>
           {editForm.hasOwnCar ? "Yes" : "No"}
         </button>
       </td>
-      <td className={`${TD} text-[#3d3730]`}>{guest.rsvpHash}</td>
-      <td className={`${TD} text-[#7a6f63]`}>{formatDate(guest.createdAt)}</td>
+      <td className={`${TD} text-[#2e3548]`}>{guest.rsvpHash}</td>
+      <td className={`${TD} text-[#6b7a90]`}>{formatDate(guest.createdAt)}</td>
       <td className="py-2">
         <div className="flex gap-1.5">
-          <button onClick={() => onSave(guest.id)} disabled={savingGuest} className={`${ACTION_BTN} text-[#c9a96e] hover:text-[#b8935a] disabled:opacity-50`}>
+          <button onClick={() => onSave(guest.id)} disabled={savingGuest} className={`${ACTION_BTN} text-[#8C2038] hover:text-[#711830] disabled:opacity-50`}>
             {savingGuest ? "Saving…" : "Save"}
           </button>
-          <span className="text-[#2e2920]">·</span>
-          <button onClick={onCancelEdit} className={`${ACTION_BTN} text-[#7a6f63] hover:text-[#9a8f82]`}>Cancel</button>
+          <span className="text-[#1e2438]">·</span>
+          <button onClick={onCancelEdit} className={`${ACTION_BTN} text-[#6b7a90] hover:text-[#8a9ab5]`}>Cancel</button>
         </div>
       </td>
     </tr>
@@ -119,30 +119,30 @@ function GuestViewRow({ guest, isDeleteTarget, onEdit, onDelete, onCancelDelete 
     : "border-red-900/50 text-red-400";
 
   return (
-    <tr className={`border-b border-[#2e2920]/40 transition-colors ${isDeleteTarget ? "bg-red-950/10" : "hover:bg-[#181612]/60"}`}>
-      <td className={`${TD} text-[#f5ede0]`}>{guest.firstName}</td>
-      <td className={`${TD} text-[#9a8f82]`}>{guest.middleName || "—"}</td>
-      <td className={`${TD} text-[#f5ede0]`}>{guest.lastName}</td>
+    <tr className={`border-b border-[#1e2438]/40 transition-colors ${isDeleteTarget ? "bg-red-950/10" : "hover:bg-[#131520]/60"}`}>
+      <td className={`${TD} text-[#edf0f5]`}>{guest.firstName}</td>
+      <td className={`${TD} text-[#8a9ab5]`}>{guest.middleName || "—"}</td>
+      <td className={`${TD} text-[#edf0f5]`}>{guest.lastName}</td>
       <td className="py-2.5 pr-4">
         <Badge variant="outline" className={`text-[10px] font-mono ${attendingClass}`}>
           {guest.attending ? "Yes" : "No"}
         </Badge>
       </td>
-      <td className={`${TD} text-[#9a8f82]`}>{guest.hasOwnCar ? "Yes" : "No"}</td>
-      <td className={`${TD} text-[#3d3730]`}>{guest.rsvpHash}</td>
-      <td className={`${TD} text-[#7a6f63]`}>{formatDate(guest.createdAt)}</td>
+      <td className={`${TD} text-[#8a9ab5]`}>{guest.hasOwnCar ? "Yes" : "No"}</td>
+      <td className={`${TD} text-[#2e3548]`}>{guest.rsvpHash}</td>
+      <td className={`${TD} text-[#6b7a90]`}>{formatDate(guest.createdAt)}</td>
       <td className="py-2.5">
         {isDeleteTarget ? (
           <div className="flex gap-1.5 items-center">
             <button onClick={() => onDelete(guest.id)} className={`${ACTION_BTN} text-red-400 hover:text-red-300`}>Confirm</button>
-            <span className="text-[#2e2920]">·</span>
-            <button onClick={onCancelDelete} className={`${ACTION_BTN} text-[#7a6f63] hover:text-[#9a8f82]`}>Cancel</button>
+            <span className="text-[#1e2438]">·</span>
+            <button onClick={onCancelDelete} className={`${ACTION_BTN} text-[#6b7a90] hover:text-[#8a9ab5]`}>Cancel</button>
           </div>
         ) : (
           <div className="flex gap-1.5 items-center">
-            <button onClick={() => onEdit(guest)} className={`${ACTION_BTN} text-[#c9a96e] hover:text-[#b8935a]`}>Edit</button>
-            <span className="text-[#2e2920]">·</span>
-            <button onClick={() => onDelete(guest.id)} className={`${ACTION_BTN} text-[#7a6f63] hover:text-red-400`}>Delete</button>
+            <button onClick={() => onEdit(guest)} className={`${ACTION_BTN} text-[#8C2038] hover:text-[#711830]`}>Edit</button>
+            <span className="text-[#1e2438]">·</span>
+            <button onClick={() => onDelete(guest.id)} className={`${ACTION_BTN} text-[#6b7a90] hover:text-red-400`}>Delete</button>
           </div>
         )}
       </td>
@@ -185,18 +185,18 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0e0c] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#0c0d10] flex items-center justify-center px-4">
       <div
         className="pointer-events-none fixed inset-0 opacity-[0.03]"
         style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E\")" }}
       />
-      <Card className="bg-[#181612] border border-[#2e2920] shadow-2xl shadow-black/60 w-full max-w-sm relative">
+      <Card className="bg-[#131520] border border-[#1e2438] shadow-2xl shadow-black/60 w-full max-w-sm relative">
         <CardHeader className="text-center space-y-3 pb-2">
-          <p className="text-[#c9a96e] text-xs tracking-[0.3em] uppercase font-mono">Admin</p>
-          <CardTitle className="text-3xl font-bold text-[#f5ede0]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+          <p className="text-[#8a9ab5] text-xs tracking-[0.3em] uppercase font-mono">Admin</p>
+          <CardTitle className="text-3xl font-bold text-[#edf0f5]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
             Sign In
           </CardTitle>
-          <Separator className="bg-[#2e2920]" />
+          <Separator className="bg-[#1e2438]" />
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -206,31 +206,31 @@ function LoginForm() {
               </Alert>
             )}
             <div className="space-y-1.5">
-              <Label className="text-[#9a8f82] text-xs tracking-widest uppercase font-mono">Email</Label>
+              <Label className="text-[#8a9ab5] text-xs tracking-widest uppercase font-mono">Email</Label>
               <Input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@example.com"
-                className="bg-[#0f0e0c] border-[#2e2920] text-[#f5ede0] placeholder:text-[#3d3730] focus:border-[#c9a96e] focus:ring-0 transition-colors"
+                className="bg-[#0c0d10] border-[#1e2438] text-[#edf0f5] placeholder:text-[#2e3548] focus:border-[#8C2038] focus:ring-0 transition-colors"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[#9a8f82] text-xs tracking-widest uppercase font-mono">Password</Label>
+              <Label className="text-[#8a9ab5] text-xs tracking-widest uppercase font-mono">Password</Label>
               <Input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="bg-[#0f0e0c] border-[#2e2920] text-[#f5ede0] placeholder:text-[#3d3730] focus:border-[#c9a96e] focus:ring-0 transition-colors"
+                className="bg-[#0c0d10] border-[#1e2438] text-[#edf0f5] placeholder:text-[#2e3548] focus:border-[#8C2038] focus:ring-0 transition-colors"
               />
             </div>
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#c9a96e] hover:bg-[#b8935a] text-[#0f0e0c] font-mono text-sm tracking-[0.15em] uppercase h-11 transition-all duration-200 disabled:opacity-50"
+              className="w-full bg-[#8C2038] hover:bg-[#711830] text-white font-mono text-sm tracking-[0.15em] uppercase h-11 transition-all duration-200 disabled:opacity-50"
             >
               {loading ? "Signing in…" : "Sign In"}
             </Button>
@@ -400,8 +400,8 @@ export default function AdminPage() {
   // ── Auth gate ───────────────────────────────────────────────────
   if (user === undefined) {
     return (
-      <div className="min-h-screen bg-[#0f0e0c] flex items-center justify-center">
-        <p className="text-[#7a6f63] font-mono text-sm tracking-widest animate-pulse">Loading…</p>
+      <div className="min-h-screen bg-[#0c0d10] flex items-center justify-center">
+        <p className="text-[#6b7a90] font-mono text-sm tracking-widest animate-pulse">Loading…</p>
       </div>
     );
   }
@@ -416,15 +416,15 @@ export default function AdminPage() {
   // ── Links table body ────────────────────────────────────────────
   let linksBody;
   if (loading) {
-    linksBody = <p className="text-[#7a6f63] font-mono text-sm text-center py-6 animate-pulse">Loading…</p>;
+    linksBody = <p className="text-[#6b7a90] font-mono text-sm text-center py-6 animate-pulse">Loading…</p>;
   } else if (links.length === 0) {
-    linksBody = <p className="text-[#3d3730] font-mono text-sm text-center py-6">No links generated yet.</p>;
+    linksBody = <p className="text-[#2e3548] font-mono text-sm text-center py-6">No links generated yet.</p>;
   } else {
     linksBody = (
       <div className="overflow-x-auto">
         <table className="w-full text-xs font-mono border-collapse">
           <thead>
-            <tr className="border-b border-[#2e2920]">
+            <tr className="border-b border-[#1e2438]">
               {["Label", "Hash", "Status", "Guests", "Date", "Actions"].map((h) => (
                 <th key={h} className={TH}>{h}</th>
               ))}
@@ -437,30 +437,30 @@ export default function AdminPage() {
                 ? "border-emerald-900/50 text-emerald-400"
                 : "border-amber-900/50 text-amber-400";
               return (
-                <tr key={link.id} className={`border-b border-[#2e2920]/40 transition-colors ${isDelTarget ? "bg-red-950/10" : "hover:bg-[#181612]/60"}`}>
-                  <td className={`${TD} text-[#f5ede0]`}>{link.label || "—"}</td>
-                  <td className={`${TD} text-[#7a6f63]`}>{link.id}</td>
+                <tr key={link.id} className={`border-b border-[#1e2438]/40 transition-colors ${isDelTarget ? "bg-red-950/10" : "hover:bg-[#131520]/60"}`}>
+                  <td className={`${TD} text-[#edf0f5]`}>{link.label || "—"}</td>
+                  <td className={`${TD} text-[#6b7a90]`}>{link.id}</td>
                   <td className="py-2.5 pr-4">
                     <Badge variant="outline" className={`text-[10px] font-mono ${statusClass}`}>
                       {link.used ? "Used" : "Pending"}
                     </Badge>
                   </td>
-                  <td className={`${TD} text-[#9a8f82]`}>{link.maxInvitees}</td>
-                  <td className={`${TD} text-[#7a6f63]`}>{formatDate(link.createdAt)}</td>
+                  <td className={`${TD} text-[#8a9ab5]`}>{link.maxInvitees}</td>
+                  <td className={`${TD} text-[#6b7a90]`}>{formatDate(link.createdAt)}</td>
                   <td className="py-2.5">
                     {isDelTarget ? (
                       <div className="flex gap-1.5 items-center">
                         <button onClick={() => handleDelete(link.id)} className={`${ACTION_BTN} text-red-400 hover:text-red-300`}>Confirm</button>
-                        <span className="text-[#2e2920]">·</span>
-                        <button onClick={() => setDeleteTarget(null)} className={`${ACTION_BTN} text-[#7a6f63] hover:text-[#9a8f82]`}>Cancel</button>
+                        <span className="text-[#1e2438]">·</span>
+                        <button onClick={() => setDeleteTarget(null)} className={`${ACTION_BTN} text-[#6b7a90] hover:text-[#8a9ab5]`}>Cancel</button>
                       </div>
                     ) : (
                       <div className="flex gap-1.5 items-center">
-                        <button onClick={() => handleCopy(getRsvpUrl(link.id), link.id)} className={`${ACTION_BTN} text-[#c9a96e] hover:text-[#b8935a]`}>
+                        <button onClick={() => handleCopy(getRsvpUrl(link.id), link.id)} className={`${ACTION_BTN} text-[#8C2038] hover:text-[#711830]`}>
                           {copiedKey === link.id ? "Copied!" : "Copy"}
                         </button>
-                        <span className="text-[#2e2920]">·</span>
-                        <button onClick={() => handleDelete(link.id)} className={`${ACTION_BTN} text-[#7a6f63] hover:text-red-400`}>Delete</button>
+                        <span className="text-[#1e2438]">·</span>
+                        <button onClick={() => handleDelete(link.id)} className={`${ACTION_BTN} text-[#6b7a90] hover:text-red-400`}>Delete</button>
                       </div>
                     )}
                   </td>
@@ -476,15 +476,15 @@ export default function AdminPage() {
   // ── Guests table body ───────────────────────────────────────────
   let guestsBody;
   if (guestsLoading) {
-    guestsBody = <p className="text-[#7a6f63] font-mono text-sm text-center py-6 animate-pulse">Loading…</p>;
+    guestsBody = <p className="text-[#6b7a90] font-mono text-sm text-center py-6 animate-pulse">Loading…</p>;
   } else if (guests.length === 0) {
-    guestsBody = <p className="text-[#3d3730] font-mono text-sm text-center py-6">No guests have submitted yet.</p>;
+    guestsBody = <p className="text-[#2e3548] font-mono text-sm text-center py-6">No guests have submitted yet.</p>;
   } else {
     guestsBody = (
       <div className="overflow-x-auto">
         <table className="w-full text-xs font-mono border-collapse">
           <thead>
-            <tr className="border-b border-[#2e2920]">
+            <tr className="border-b border-[#1e2438]">
               {["First Name", "Middle Name", "Last Name", "Attending", "Transport", "Hash", "Date", "Actions"].map((h) => (
                 <th key={h} className={TH}>{h}</th>
               ))}
@@ -520,7 +520,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0e0c] py-8 sm:py-12 px-4">
+    <div className="min-h-screen bg-[#0c0d10] py-8 sm:py-12 px-4">
       <div
         className="pointer-events-none fixed inset-0 opacity-[0.03]"
         style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E\")" }}
@@ -529,18 +529,18 @@ export default function AdminPage() {
       <div className="w-full max-w-4xl mx-auto space-y-6 relative">
         {/* Header */}
         <div className="text-center space-y-2 pb-2">
-          <p className="text-[#c9a96e] text-xs tracking-[0.3em] uppercase font-mono">Admin</p>
-          <h1 className="text-3xl sm:text-4xl font-bold text-[#f5ede0]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+          <p className="text-[#8a9ab5] text-xs tracking-[0.3em] uppercase font-mono">Admin</p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#edf0f5]" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
             RSVP Manager
           </h1>
-          <p className="text-[#7a6f63] text-xs font-mono">
+          <p className="text-[#6b7a90] text-xs font-mono">
             {!loading && `${pendingCount} pending · ${usedCount} used`}
             {guestsLoaded && ` · ${attendingCount} attending`}
           </p>
         </div>
 
         {/* Tabs + Sign Out */}
-        <div className="flex items-center justify-between border-b border-[#2e2920]">
+        <div className="flex items-center justify-between border-b border-[#1e2438]">
           <div className="flex">
             {[{ id: "links", label: "Links" }, { id: "guests", label: "All Guests" }].map((tab) => (
               <button
@@ -548,8 +548,8 @@ export default function AdminPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-5 py-2 font-mono text-xs tracking-widest uppercase transition-colors ${
                   activeTab === tab.id
-                    ? "text-[#c9a96e] border-b-2 border-[#c9a96e] -mb-px"
-                    : "text-[#7a6f63] hover:text-[#9a8f82]"
+                    ? "text-[#8C2038] border-b-2 border-[#8C2038] -mb-px"
+                    : "text-[#6b7a90] hover:text-[#8a9ab5]"
                 }`}
               >
                 {tab.label}
@@ -558,7 +558,7 @@ export default function AdminPage() {
           </div>
           <button
             onClick={() => signOut(auth)}
-            className="text-[#7a6f63] hover:text-red-400 font-mono text-[10px] tracking-widest uppercase transition-colors pb-2"
+            className="text-[#6b7a90] hover:text-red-400 font-mono text-[10px] tracking-widest uppercase transition-colors pb-2"
           >
             Sign Out
           </button>
@@ -573,29 +573,29 @@ export default function AdminPage() {
               </Alert>
             )}
 
-            <Card className="bg-[#181612] border border-[#2e2920] shadow-xl shadow-black/40">
+            <Card className="bg-[#131520] border border-[#1e2438] shadow-xl shadow-black/40">
               <CardHeader className="pb-3">
-                <CardTitle className="text-[#f5ede0] text-base" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                <CardTitle className="text-[#edf0f5] text-base" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
                   Generate New Link
                 </CardTitle>
-                <Separator className="bg-[#2e2920] mt-2" />
+                <Separator className="bg-[#1e2438] mt-2" />
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <Label className="text-[#9a8f82] text-xs tracking-widest uppercase font-mono">
-                      Label <span className="text-[#3d3730]">(optional)</span>
+                    <Label className="text-[#8a9ab5] text-xs tracking-widest uppercase font-mono">
+                      Label <span className="text-[#2e3548]">(optional)</span>
                     </Label>
                     <Input
                       value={label}
                       onChange={(e) => setLabel(e.target.value)}
                       placeholder="e.g. Garcia Family"
-                      className="bg-[#0f0e0c] border-[#2e2920] text-[#f5ede0] placeholder:text-[#3d3730] focus:border-[#c9a96e] focus:ring-0 transition-colors"
+                      className="bg-[#0c0d10] border-[#1e2438] text-[#edf0f5] placeholder:text-[#2e3548] focus:border-[#8C2038] focus:ring-0 transition-colors"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-[#9a8f82] text-xs tracking-widest uppercase font-mono">
-                      Number of Guests <span className="text-[#c9a96e]">*</span>
+                    <Label className="text-[#8a9ab5] text-xs tracking-widest uppercase font-mono">
+                      Number of Guests <span className="text-[#8C2038]">*</span>
                     </Label>
                     <Input
                       type="number"
@@ -603,20 +603,20 @@ export default function AdminPage() {
                       max={20}
                       value={maxInvitees}
                       onChange={(e) => setMaxInvitees(Math.max(1, Number.parseInt(e.target.value) || 1))}
-                      className="bg-[#0f0e0c] border-[#2e2920] text-[#f5ede0] focus:border-[#c9a96e] focus:ring-0 transition-colors"
+                      className="bg-[#0c0d10] border-[#1e2438] text-[#edf0f5] focus:border-[#8C2038] focus:ring-0 transition-colors"
                     />
                   </div>
                 </div>
                 <Button onClick={handleGenerate} disabled={generating}
-                  className="w-full bg-[#c9a96e] hover:bg-[#b8935a] text-[#0f0e0c] font-mono text-sm tracking-[0.15em] uppercase h-11 transition-all duration-200 disabled:opacity-50">
+                  className="w-full bg-[#8C2038] hover:bg-[#711830] text-white font-mono text-sm tracking-[0.15em] uppercase h-11 transition-all duration-200 disabled:opacity-50">
                   {generating ? "Generating…" : "Generate Link"}
                 </Button>
                 {generatedLink && (
-                  <div className="bg-[#0f0e0c] border border-[#c9a96e]/30 rounded-md p-3 space-y-2">
-                    <p className="text-[#c9a96e] text-[10px] font-mono tracking-widest uppercase">Link Ready</p>
-                    <p className="text-[#f5ede0] text-xs font-mono break-all leading-relaxed">{generatedLink.url}</p>
+                  <div className="bg-[#0c0d10] border border-[#8a9ab5]/30 rounded-md p-3 space-y-2">
+                    <p className="text-[#8a9ab5] text-[10px] font-mono tracking-widest uppercase">Link Ready</p>
+                    <p className="text-[#edf0f5] text-xs font-mono break-all leading-relaxed">{generatedLink.url}</p>
                     <Button size="sm" onClick={() => handleCopy(generatedLink.url, "__generated")}
-                      className="bg-[#2e2920] hover:bg-[#3d3730] text-[#c9a96e] font-mono text-[10px] tracking-widest uppercase border border-[#c9a96e]/20 h-8">
+                      className="bg-[#1e2438] hover:bg-[#2e3548] text-[#8a9ab5] font-mono text-[10px] tracking-widest uppercase border border-[#8a9ab5]/20 h-8">
                       {copiedKey === "__generated" ? "Copied!" : "Copy Link"}
                     </Button>
                   </div>
@@ -624,16 +624,16 @@ export default function AdminPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-[#181612] border border-[#2e2920] shadow-xl shadow-black/40">
+            <Card className="bg-[#131520] border border-[#1e2438] shadow-xl shadow-black/40">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-[#f5ede0] text-base" style={{ fontFamily: "'Cormorant Garamond', serif" }}>All Links</CardTitle>
+                  <CardTitle className="text-[#edf0f5] text-base" style={{ fontFamily: "'Cormorant Garamond', serif" }}>All Links</CardTitle>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-[10px] border-[#2e2920] text-[#7a6f63] font-mono">{links.length} total</Badge>
-                    <button onClick={fetchLinks} className="text-[#7a6f63] hover:text-[#c9a96e] font-mono text-[10px] tracking-widest uppercase transition-colors">Refresh</button>
+                    <Badge variant="outline" className="text-[10px] border-[#1e2438] text-[#6b7a90] font-mono">{links.length} total</Badge>
+                    <button onClick={fetchLinks} className="text-[#6b7a90] hover:text-[#8C2038] font-mono text-[10px] tracking-widest uppercase transition-colors">Refresh</button>
                   </div>
                 </div>
-                <Separator className="bg-[#2e2920] mt-2" />
+                <Separator className="bg-[#1e2438] mt-2" />
               </CardHeader>
               <CardContent>{linksBody}</CardContent>
             </Card>
@@ -648,21 +648,21 @@ export default function AdminPage() {
                 <AlertDescription>{guestsError}</AlertDescription>
               </Alert>
             )}
-            <Card className="bg-[#181612] border border-[#2e2920] shadow-xl shadow-black/40">
+            <Card className="bg-[#131520] border border-[#1e2438] shadow-xl shadow-black/40">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-[#f5ede0] text-base" style={{ fontFamily: "'Cormorant Garamond', serif" }}>All Guests</CardTitle>
+                  <CardTitle className="text-[#edf0f5] text-base" style={{ fontFamily: "'Cormorant Garamond', serif" }}>All Guests</CardTitle>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-[10px] border-[#2e2920] text-[#7a6f63] font-mono">{guests.length} total</Badge>
-                    <button onClick={fetchGuests} className="text-[#7a6f63] hover:text-[#c9a96e] font-mono text-[10px] tracking-widest uppercase transition-colors">Refresh</button>
+                    <Badge variant="outline" className="text-[10px] border-[#1e2438] text-[#6b7a90] font-mono">{guests.length} total</Badge>
+                    <button onClick={fetchGuests} className="text-[#6b7a90] hover:text-[#8C2038] font-mono text-[10px] tracking-widest uppercase transition-colors">Refresh</button>
                     {guests.length > 0 && (
-                      <button onClick={() => exportGuestsCsv(guests)} className="text-[#c9a96e] hover:text-[#b8935a] font-mono text-[10px] tracking-widest uppercase transition-colors">
+                      <button onClick={() => exportGuestsCsv(guests)} className="text-[#8C2038] hover:text-[#711830] font-mono text-[10px] tracking-widest uppercase transition-colors">
                         Export CSV
                       </button>
                     )}
                   </div>
                 </div>
-                <Separator className="bg-[#2e2920] mt-2" />
+                <Separator className="bg-[#1e2438] mt-2" />
               </CardHeader>
               <CardContent>{guestsBody}</CardContent>
             </Card>

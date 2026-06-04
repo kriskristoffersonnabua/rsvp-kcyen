@@ -16,8 +16,8 @@ const AdminPage = lazy(() => import("./AdminPage"));
 
 function PageLoader() {
   return (
-    <div className="min-h-screen bg-[#0f0e0c] flex items-center justify-center">
-      <p className="text-[#7a6f63] font-mono text-sm tracking-widest animate-pulse">Loading…</p>
+    <div className="min-h-screen bg-[#0c0d10] flex items-center justify-center">
+      <p className="text-[#6b7a90] font-mono text-sm tracking-widest animate-pulse">Loading…</p>
     </div>
   );
 }
@@ -38,8 +38,8 @@ export default function App() {
 
   if (!hash) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0d0d0d]">
-        <p className="text-[#b0a090] font-serif text-lg tracking-wide">
+      <div className="min-h-screen flex items-center justify-center bg-[#0c0d10]">
+        <p className="text-[#8a9ab5] font-serif text-lg tracking-wide">
           No invitation link provided.
         </p>
       </div>
