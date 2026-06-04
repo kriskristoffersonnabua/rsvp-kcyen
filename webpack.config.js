@@ -33,7 +33,7 @@ module.exports = (env, argv) => ({
     new HtmlWebpackPlugin({
       template: "./index.html",
     }),
-    new Dotenv(),
+    new Dotenv({ systemvars: true }),
   ],
   optimization: {
     splitChunks: {
