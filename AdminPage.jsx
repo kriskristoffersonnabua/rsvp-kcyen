@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "./firebaseConfig";
-import { createRsvpLink, listRsvpLinks, deleteRsvpLink, listAttendees, updateAttendee, deleteAttendee } from "./firebaseApi";
+import { createRsvpLink, listRsvpLinks, deleteRsvpLink, listAttendees, updateAttendee, deleteAttendee, getAttendeesByHash } from "./firebaseApi";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -257,6 +257,7 @@ export default function AdminPage() {
   const [generatedLink, setGeneratedLink] = useState(null);
   const [copiedKey, setCopiedKey] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [attendeeDeletePrompt, setAttendeeDeletePrompt] = useState(null);
   const [error, setError] = useState("");
 
   // ── Guests tab state ────────────────────────────────────────────
@@ -372,14 +373,27 @@ export default function AdminPage() {
     }
   }
 
-  async function handleDelete(hash) {
+  function handleDelete(hash) {
     if (deleteTarget !== hash) {
       setDeleteTarget(hash);
       return;
     }
+    setDeleteTarget(null);
+    setAttendeeDeletePrompt(hash);
+  }
+
+  async function handleDeleteWithAttendees(withAttendees) {
+    const hash = attendeeDeletePrompt;
+    setAttendeeDeletePrompt(null);
     try {
+      if (withAttendees) {
+        const attendees = await getAttendeesByHash(hash);
+        await Promise.all(attendees.map((a) => deleteAttendee(a.id)));
+        if (guestsLoaded) {
+          setGuests((prev) => prev.filter((g) => g.rsvpHash !== hash));
+        }
+      }
       await deleteRsvpLink(hash);
-      setDeleteTarget(null);
       if (generatedLink?.hash === hash) setGeneratedLink(null);
       await fetchLinks();
     } catch {
@@ -669,6 +683,33 @@ export default function AdminPage() {
           </>
         )}
       </div>
+
+      {/* ── Delete attendees prompt ──────────────────────────────── */}
+      {attendeeDeletePrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="bg-[#131520] border border-[#1e2438] rounded-lg shadow-2xl shadow-black/60 p-6 max-w-sm w-full mx-4">
+            <p className="text-[#edf0f5] font-mono text-sm tracking-wide mb-1">Delete attendees?</p>
+            <p className="text-[#6b7a90] font-mono text-xs mb-6">
+              Also delete all attendees associated with hash{" "}
+              <span className="text-[#8a9ab5]">{attendeeDeletePrompt}</span>?
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => handleDeleteWithAttendees(false)}
+                className="px-4 py-1.5 font-mono text-xs tracking-widest uppercase border border-[#1e2438] text-[#6b7a90] hover:text-[#8a9ab5] hover:border-[#2e3548] rounded transition-colors"
+              >
+                No
+              </button>
+              <button
+                onClick={() => handleDeleteWithAttendees(true)}
+                className="px-4 py-1.5 font-mono text-xs tracking-widest uppercase bg-red-900/30 border border-red-900/50 text-red-400 hover:bg-red-900/50 hover:text-red-300 rounded transition-colors"
+              >
+                Yes, delete all
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
