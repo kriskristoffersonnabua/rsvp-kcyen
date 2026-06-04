@@ -1,5 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const Dotenv = require("dotenv-webpack");
 
 module.exports = (env, argv) => ({
   entry: "./index.jsx",
@@ -32,7 +33,25 @@ module.exports = (env, argv) => ({
     new HtmlWebpackPlugin({
       template: "./index.html",
     }),
+    new Dotenv(),
   ],
+  optimization: {
+    splitChunks: {
+      chunks: "all",
+      cacheGroups: {
+        firebase: {
+          test: /[\\/]node_modules[\\/](@firebase|firebase)[\\/]/,
+          name: "firebase",
+          priority: 20,
+        },
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: "vendor",
+          priority: 10,
+        },
+      },
+    },
+  },
   devServer: {
     port: 3000,
     historyApiFallback: true,
