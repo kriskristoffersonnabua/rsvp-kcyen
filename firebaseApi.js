@@ -146,3 +146,16 @@ export async function updateAttendee(docId, updates) {
 export async function deleteAttendee(docId) {
   await remove(ref(db, `${ATTENDEES_PATH}/${docId}`));
 }
+
+// ─────────────────────────────────────────────
+//  CONFIG
+// ─────────────────────────────────────────────
+
+export async function getGuestLimit() {
+  const snap = await get(ref(db, "config/guestLimit"));
+  return snap.exists() ? snap.val() : 130;
+}
+
+export async function setGuestLimit(limit) {
+  await set(ref(db, "config/guestLimit"), limit);
+}

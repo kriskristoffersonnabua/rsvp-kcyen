@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "./firebaseConfig";
-import { createRsvpLink, listRsvpLinks, deleteRsvpLink, listAttendees, updateAttendee, deleteAttendee, getAttendeesByHash } from "./firebaseApi";
+import { createRsvpLink, listRsvpLinks, deleteRsvpLink, listAttendees, updateAttendee, deleteAttendee, getAttendeesByHash, getGuestLimit, setGuestLimit } from "./firebaseApi";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -260,6 +260,10 @@ export default function AdminPage() {
   const [attendeeDeletePrompt, setAttendeeDeletePrompt] = useState(null);
   const [exceedGuestWarning, setExceedGuestWarning] = useState(null);
   const [error, setError] = useState("");
+  const [guestLimit, setGuestLimitState] = useState(130);
+  const [editingLimit, setEditingLimit] = useState(false);
+  const [limitInput, setLimitInput] = useState("130");
+  const [savingLimit, setSavingLimit] = useState(false);
 
   // ── Guests tab state ────────────────────────────────────────────
   const [guests, setGuests] = useState([]);
@@ -351,7 +355,13 @@ export default function AdminPage() {
     }
   }
 
-  useEffect(() => { fetchLinks(); }, [fetchLinks]);
+  useEffect(() => {
+    fetchLinks();
+    getGuestLimit().then((limit) => {
+      setGuestLimitState(limit);
+      setLimitInput(String(limit));
+    });
+  }, [fetchLinks]);
 
   useEffect(() => {
     if (activeTab === "guests" && !guestsLoaded) fetchGuests();
@@ -377,7 +387,7 @@ export default function AdminPage() {
     const currentTotal = links.reduce((sum, link) => sum + (link.maxInvitees || 0), 0);
     const newTotal = currentTotal + maxInvitees;
 
-    if (newTotal > 130) {
+    if (newTotal > guestLimit) {
       setExceedGuestWarning({ newTotal, maxInvitees });
     } else {
       const hash = generateHash();
@@ -426,6 +436,21 @@ export default function AdminPage() {
       setTimeout(() => setCopiedKey(null), 2000);
     } catch {
       setError("Clipboard access denied.");
+    }
+  }
+
+  async function handleSaveLimit() {
+    const parsed = Number.parseInt(limitInput);
+    if (!parsed || parsed < 1) return;
+    setSavingLimit(true);
+    try {
+      await setGuestLimit(parsed);
+      setGuestLimitState(parsed);
+      setEditingLimit(false);
+    } catch {
+      setError("Failed to update guest limit.");
+    } finally {
+      setSavingLimit(false);
     }
   }
 
@@ -656,6 +681,60 @@ export default function AdminPage() {
               </CardContent>
             </Card>
 
+            {/* ── Guest Limit Setting ─────────────────────────────── */}
+            <Card className="bg-[#131520] border border-[#1e2438] shadow-xl shadow-black/40">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-[#edf0f5] text-base" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Guest Limit</CardTitle>
+                  {!editingLimit && (
+                    <button
+                      onClick={() => { setLimitInput(String(guestLimit)); setEditingLimit(true); }}
+                      className="text-[#6b7a90] hover:text-[#8C2038] font-mono text-[10px] tracking-widest uppercase transition-colors"
+                    >
+                      Edit
+                    </button>
+                  )}
+                </div>
+                <Separator className="bg-[#1e2438] mt-2" />
+              </CardHeader>
+              <CardContent>
+                {editingLimit ? (
+                  <div className="flex items-end gap-3">
+                    <div className="space-y-1.5 flex-1">
+                      <Label className="text-[#8a9ab5] text-xs tracking-widest uppercase font-mono">Max total guests</Label>
+                      <Input
+                        type="number"
+                        min={1}
+                        value={limitInput}
+                        onChange={(e) => setLimitInput(e.target.value)}
+                        className="bg-[#0c0d10] border-[#1e2438] text-[#edf0f5] focus:border-[#8C2038] focus:ring-0 transition-colors"
+                      />
+                    </div>
+                    <div className="flex gap-2 pb-0.5">
+                      <Button
+                        onClick={handleSaveLimit}
+                        disabled={savingLimit}
+                        className="bg-[#8C2038] hover:bg-[#711830] text-white font-mono text-xs tracking-widest uppercase h-9 px-4 disabled:opacity-50"
+                      >
+                        {savingLimit ? "Saving…" : "Save"}
+                      </Button>
+                      <Button
+                        onClick={() => setEditingLimit(false)}
+                        variant="outline"
+                        className="border-[#1e2438] text-[#6b7a90] hover:text-[#8a9ab5] hover:border-[#2e3548] font-mono text-xs tracking-widest uppercase h-9 px-4 bg-transparent"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-[#6b7a90] font-mono text-xs">
+                    Current limit: <span className="text-[#edf0f5] text-sm">{guestLimit}</span> guests
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+
             <Card className="bg-[#131520] border border-[#1e2438] shadow-xl shadow-black/40">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
@@ -708,7 +787,7 @@ export default function AdminPage() {
           <div className="bg-[#131520] border border-[#1e2438] rounded-lg shadow-2xl shadow-black/60 p-6 max-w-sm w-full mx-4">
             <p className="text-[#edf0f5] font-mono text-sm tracking-wide mb-1">Guest limit exceeded?</p>
             <p className="text-[#6b7a90] font-mono text-xs mb-6">
-              Total guests will be <span className="text-[#8a9ab5]">{exceedGuestWarning.newTotal}</span> (exceeds 130 limit). Continue generating link?
+              Total guests will be <span className="text-[#8a9ab5]">{exceedGuestWarning.newTotal}</span> (exceeds {guestLimit} limit). Continue generating link?
             </p>
             <div className="flex gap-3 justify-end">
               <button
