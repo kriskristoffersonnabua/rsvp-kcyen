@@ -469,6 +469,7 @@ export default function AdminPage() {
   const pendingCount = links.filter((l) => !l.used).length;
   const usedCount = links.filter((l) => l.used).length;
   const attendingCount = guests.filter((g) => g.attending).length;
+  const totalInvitedGuests = links.reduce((sum, l) => sum + (l.maxInvitees || 0), 0);
 
   // ── Links table body ────────────────────────────────────────────
   let linksBody;
@@ -541,6 +542,11 @@ export default function AdminPage() {
       <div className="overflow-x-auto">
         <table className="w-full text-xs font-mono border-collapse">
           <thead>
+            <tr className="border-b border-[#1e2438]/40">
+              <td colSpan={8} className="text-right pb-1 font-mono text-[11px] text-[#8C2038]">
+                {totalInvitedGuests} guest{totalInvitedGuests !== 1 ? "s" : ""} total
+              </td>
+            </tr>
             <tr className="border-b border-[#1e2438]">
               {["First Name", "Middle Name", "Last Name", "Attending", "Transport", "Hash", "Date", "Actions"].map((h) => (
                 <th key={h} className={TH}>{h}</th>
@@ -740,7 +746,8 @@ export default function AdminPage() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-[#edf0f5] text-base" style={{ fontFamily: "'Cormorant Garamond', serif" }}>All Links</CardTitle>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-[10px] border-[#1e2438] text-[#6b7a90] font-mono">{links.length} total</Badge>
+                    <Badge variant="outline" className="text-[10px] border-[#1e2438] text-[#6b7a90] font-mono">{links.length} links</Badge>
+                    <Badge variant="outline" className="text-[10px] border-[#1e2438] text-[#8a9ab5] font-mono">{totalInvitedGuests} guests</Badge>
                     <button onClick={fetchLinks} className="text-[#6b7a90] hover:text-[#8C2038] font-mono text-[10px] tracking-widest uppercase transition-colors">Refresh</button>
                   </div>
                 </div>
