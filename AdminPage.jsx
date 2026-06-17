@@ -274,6 +274,8 @@ export default function AdminPage() {
   const [editForm, setEditForm] = useState({});
   const [savingGuest, setSavingGuest] = useState(false);
   const [deleteGuestTarget, setDeleteGuestTarget] = useState(null);
+  const [guestSortField, setGuestSortField] = useState("createdAt");
+  const [guestSortOrder, setGuestSortOrder] = useState("desc");
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => setUser(u ?? null));
@@ -353,6 +355,59 @@ export default function AdminPage() {
     } catch {
       setGuestsError("Failed to delete guest.");
     }
+  }
+
+  function handleGuestSort(field) {
+    if (guestSortField === field) {
+      setGuestSortOrder(guestSortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setGuestSortField(field);
+      setGuestSortOrder("asc");
+    }
+  }
+
+  function getSortedGuests() {
+    const sorted = [...guests];
+    sorted.sort((a, b) => {
+      let aVal, bVal;
+
+      switch (guestSortField) {
+        case "firstName":
+          aVal = (a.firstName ?? "").toLowerCase();
+          bVal = (b.firstName ?? "").toLowerCase();
+          break;
+        case "middleName":
+          aVal = (a.middleName ?? "").toLowerCase();
+          bVal = (b.middleName ?? "").toLowerCase();
+          break;
+        case "lastName":
+          aVal = (a.lastName ?? "").toLowerCase();
+          bVal = (b.lastName ?? "").toLowerCase();
+          break;
+        case "attending":
+          aVal = a.attending ? 1 : 0;
+          bVal = b.attending ? 1 : 0;
+          break;
+        case "hasOwnCar":
+          aVal = a.hasOwnCar ? 1 : 0;
+          bVal = b.hasOwnCar ? 1 : 0;
+          break;
+        case "rsvpHash":
+          aVal = a.rsvpHash ?? "";
+          bVal = b.rsvpHash ?? "";
+          break;
+        case "createdAt":
+        default:
+          aVal = a.createdAt ?? 0;
+          bVal = b.createdAt ?? 0;
+          break;
+      }
+
+      if (aVal < bVal) return guestSortOrder === "asc" ? -1 : 1;
+      if (aVal > bVal) return guestSortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+    return sorted;
   }
 
   useEffect(() => {
@@ -538,6 +593,18 @@ export default function AdminPage() {
   } else if (guests.length === 0) {
     guestsBody = <p className="text-[#2e3548] font-mono text-sm text-center py-6">No guests have submitted yet.</p>;
   } else {
+    const sortedGuests = getSortedGuests();
+    const columnConfig = [
+      { label: "First Name", key: "firstName" },
+      { label: "Middle Name", key: "middleName" },
+      { label: "Last Name", key: "lastName" },
+      { label: "Attending", key: "attending" },
+      { label: "Transport", key: "hasOwnCar" },
+      { label: "Hash", key: "rsvpHash" },
+      { label: "Date", key: "createdAt" },
+      { label: "Actions", key: null },
+    ];
+
     guestsBody = (
       <div className="overflow-x-auto">
         <table className="w-full text-xs font-mono border-collapse">
@@ -548,13 +615,24 @@ export default function AdminPage() {
               </td>
             </tr>
             <tr className="border-b border-[#1e2438]">
-              {["First Name", "Middle Name", "Last Name", "Attending", "Transport", "Hash", "Date", "Actions"].map((h) => (
-                <th key={h} className={TH}>{h}</th>
+              {columnConfig.map((col) => (
+                <th
+                  key={col.label}
+                  onClick={() => col.key && handleGuestSort(col.key)}
+                  className={`${TH} ${col.key ? "cursor-pointer hover:text-[#edf0f5] transition-colors" : ""}`}
+                >
+                  <div className="flex items-center gap-1">
+                    {col.label}
+                    {col.key === guestSortField && (
+                      <span className="text-[#8C2038]">{guestSortOrder === "asc" ? "↑" : "↓"}</span>
+                    )}
+                  </div>
+                </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {guests.map((guest) =>
+            {sortedGuests.map((guest) =>
               editingId === guest.id ? (
                 <GuestEditRow
                   key={guest.id}
