@@ -258,6 +258,7 @@ export default function AdminPage() {
   const [copiedKey, setCopiedKey] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [attendeeDeletePrompt, setAttendeeDeletePrompt] = useState(null);
+  const [exceedGuestWarning, setExceedGuestWarning] = useState(null);
   const [error, setError] = useState("");
 
   // ── Guests tab state ────────────────────────────────────────────
@@ -356,13 +357,12 @@ export default function AdminPage() {
     if (activeTab === "guests" && !guestsLoaded) fetchGuests();
   }, [activeTab, guestsLoaded, fetchGuests]);
 
-  async function handleGenerate() {
+  async function createLink(hash, maxInviteesValue, labelValue) {
     setGenerating(true);
     setError("");
     setGeneratedLink(null);
     try {
-      const hash = generateHash();
-      await createRsvpLink(hash, maxInvitees, label.trim());
+      await createRsvpLink(hash, maxInviteesValue, labelValue.trim());
       setGeneratedLink({ hash, url: getRsvpUrl(hash) });
       setLabel("");
       await fetchLinks();
@@ -371,6 +371,24 @@ export default function AdminPage() {
     } finally {
       setGenerating(false);
     }
+  }
+
+  function handleGenerate() {
+    const currentTotal = links.reduce((sum, link) => sum + (link.maxInvitees || 0), 0);
+    const newTotal = currentTotal + maxInvitees;
+
+    if (newTotal > 130) {
+      setExceedGuestWarning({ newTotal, maxInvitees });
+    } else {
+      const hash = generateHash();
+      createLink(hash, maxInvitees, label);
+    }
+  }
+
+  async function handleConfirmExceed() {
+    const hash = generateHash();
+    await createLink(hash, maxInvitees, label);
+    setExceedGuestWarning(null);
   }
 
   function handleDelete(hash) {
@@ -683,6 +701,33 @@ export default function AdminPage() {
           </>
         )}
       </div>
+
+      {/* ── Guest count exceeded warning ────────────────────────── */}
+      {exceedGuestWarning && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="bg-[#131520] border border-[#1e2438] rounded-lg shadow-2xl shadow-black/60 p-6 max-w-sm w-full mx-4">
+            <p className="text-[#edf0f5] font-mono text-sm tracking-wide mb-1">Guest limit exceeded?</p>
+            <p className="text-[#6b7a90] font-mono text-xs mb-6">
+              Total guests will be <span className="text-[#8a9ab5]">{exceedGuestWarning.newTotal}</span> (exceeds 130 limit). Continue generating link?
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setExceedGuestWarning(null)}
+                className="px-4 py-1.5 font-mono text-xs tracking-widest uppercase border border-[#1e2438] text-[#6b7a90] hover:text-[#8a9ab5] hover:border-[#2e3548] rounded transition-colors"
+              >
+                No
+              </button>
+              <button
+                onClick={handleConfirmExceed}
+                disabled={generating}
+                className="px-4 py-1.5 font-mono text-xs tracking-widest uppercase bg-[#8C2038]/30 border border-[#8C2038]/50 text-[#8C2038] hover:bg-[#8C2038]/50 hover:text-[#ff6b8a] rounded transition-colors disabled:opacity-50"
+              >
+                {generating ? "Generating…" : "Yes, continue"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Delete attendees prompt ──────────────────────────────── */}
       {attendeeDeletePrompt && (
