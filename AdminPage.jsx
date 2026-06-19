@@ -524,6 +524,9 @@ export default function AdminPage() {
   const pendingCount = links.filter((l) => !l.used).length;
   const usedCount = links.filter((l) => l.used).length;
   const attendingCount = guests.filter((g) => g.attending).length;
+  const notAttendingCount = guests.filter((g) => !g.attending).length;
+  const withTransportCount = guests.filter((g) => g.hasOwnCar).length;
+  const noTransportCount = guests.filter((g) => !g.hasOwnCar).length;
   const totalInvitedGuests = links.reduce((sum, l) => sum + (l.maxInvitees || 0), 0);
 
   // ── Links table body ────────────────────────────────────────────
@@ -610,8 +613,19 @@ export default function AdminPage() {
         <table className="w-full text-xs font-mono border-collapse">
           <thead>
             <tr className="border-b border-[#1e2438]/40">
-              <td colSpan={8} className="text-right pb-1 font-mono text-[11px] text-[#8C2038]">
-                {totalInvitedGuests} guest{totalInvitedGuests !== 1 ? "s" : ""} total
+              <td colSpan={8} className="pb-1 font-mono text-[11px]">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 text-[#6b7a90]">
+                    <span><span className="text-emerald-400">{attendingCount}</span> attending</span>
+                    <span className="text-[#1e2438]">·</span>
+                    <span><span className="text-red-400">{notAttendingCount}</span> not attending</span>
+                    <span className="text-[#1e2438]">·</span>
+                    <span><span className="text-[#8C2038]">{withTransportCount}</span> w/ transport</span>
+                    <span className="text-[#1e2438]">·</span>
+                    <span><span className="text-[#8a9ab5]">{noTransportCount}</span> no transport</span>
+                  </div>
+                  <span className="text-[#8C2038]">{totalInvitedGuests} guest{totalInvitedGuests !== 1 ? "s" : ""} total</span>
+                </div>
               </td>
             </tr>
             <tr className="border-b border-[#1e2438]">
