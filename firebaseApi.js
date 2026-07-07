@@ -148,6 +148,23 @@ export async function deleteAttendee(docId) {
 }
 
 // ─────────────────────────────────────────────
+//  FLOOR PLAN
+// ─────────────────────────────────────────────
+
+const FLOOR_PLAN_PATH = "floor_plan";
+
+export async function saveFloorPlan(plan) {
+  await set(ref(db, FLOOR_PLAN_PATH), { ...plan, updatedAt: serverTimestamp() });
+}
+
+export async function loadFloorPlan() {
+  const snap = await get(ref(db, FLOOR_PLAN_PATH));
+  if (!snap.exists()) return null;
+  const { updatedAt, ...plan } = snap.val();
+  return plan;
+}
+
+// ─────────────────────────────────────────────
 //  CONFIG
 // ─────────────────────────────────────────────
 

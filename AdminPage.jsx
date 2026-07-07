@@ -4,6 +4,8 @@ import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebas
 import { auth } from "./firebaseConfig";
 import { createRsvpLink, listRsvpLinks, deleteRsvpLink, listAttendees, updateAttendee, deleteAttendee, getAttendeesByHash, getGuestLimit, setGuestLimit } from "./firebaseApi";
 
+import FloorPlanTab from "./FloorPlanTab";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -419,7 +421,7 @@ export default function AdminPage() {
   }, [fetchLinks]);
 
   useEffect(() => {
-    if (activeTab === "guests" && !guestsLoaded) fetchGuests();
+    if ((activeTab === "guests" || activeTab === "floorplan") && !guestsLoaded) fetchGuests();
   }, [activeTab, guestsLoaded, fetchGuests]);
 
   async function createLink(hash, maxInviteesValue, labelValue) {
@@ -697,7 +699,7 @@ export default function AdminPage() {
         {/* Tabs + Sign Out */}
         <div className="flex items-center justify-between border-b border-[#1e2438]">
           <div className="flex">
-            {[{ id: "links", label: "Links" }, { id: "guests", label: "All Guests" }].map((tab) => (
+            {[{ id: "links", label: "Links" }, { id: "guests", label: "All Guests" }, { id: "floorplan", label: "Floor Plan" }].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
@@ -848,6 +850,11 @@ export default function AdminPage() {
               <CardContent>{linksBody}</CardContent>
             </Card>
           </>
+        )}
+
+        {/* ── FLOOR PLAN TAB ──────────────────────────────────────── */}
+        {activeTab === "floorplan" && (
+          <FloorPlanTab guests={guestsLoaded ? guests : []} />
         )}
 
         {/* ── GUESTS TAB ──────────────────────────────────────────── */}
