@@ -472,6 +472,57 @@ export default function FloorPlanTab({ guests }) {
     localStorage.removeItem(BG_ORIENTATION_KEY);
   }
 
+  function exportCSV() {
+    const rows = [["Table", "Capacity", "Filled", "Guest Name"]];
+    plan.tables.forEach((table) => {
+      const gids = table.guestIds ?? [];
+      if (gids.length === 0) {
+        rows.push([table.name, table.capacity, 0, ""]);
+      } else {
+        gids.forEach((gid, i) => {
+          const g = attendingGuests.find((ag) => ag.id === gid);
+          rows.push([
+            i === 0 ? table.name : "",
+            i === 0 ? table.capacity : "",
+            i === 0 ? gids.length : "",
+            g ? `${g.firstName} ${g.lastName}` : "",
+          ]);
+        });
+      }
+    });
+    const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const link = document.createElement("a");
+    link.download = "seating-summary.csv";
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+
+  const [copyLabel, setCopyLabel] = useState("Copy Text");
+  function exportText() {
+    const seated = plan.tables.reduce((s, t) => s + (t.guestIds ?? []).length, 0);
+    const totalCap = plan.tables.reduce((s, t) => s + t.capacity, 0);
+    const lines = [`SEATING SUMMARY — ${seated}/${totalCap} seats filled`, ""];
+    plan.tables.forEach((table) => {
+      const gids = table.guestIds ?? [];
+      lines.push(`${table.name} (${gids.length}/${table.capacity} seats)`);
+      if (gids.length === 0) {
+        lines.push("  (empty)");
+      } else {
+        gids.forEach((gid, i) => {
+          const g = attendingGuests.find((ag) => ag.id === gid);
+          lines.push(`  ${i + 1}. ${g ? `${g.firstName} ${g.lastName}` : "(unknown)"}`);
+        });
+      }
+      lines.push("");
+    });
+    navigator.clipboard.writeText(lines.join("\n")).then(() => {
+      setCopyLabel("Copied!");
+      setTimeout(() => setCopyLabel("Copy Text"), 2000);
+    });
+  }
+
   const exportFloorPlan = useCallback(async () => {
     if (!canvasRef.current) return;
 
@@ -700,6 +751,18 @@ export default function FloorPlanTab({ guests }) {
             className="text-[#8a9ab5] hover:text-[#edf0f5] font-mono text-[9px] tracking-widest uppercase transition-colors border border-[#1e2438] hover:border-[#8a9ab5] rounded px-2 py-1"
           >
             Export PNG
+          </button>
+          <button
+            onClick={exportCSV}
+            className="text-[#8a9ab5] hover:text-[#edf0f5] font-mono text-[9px] tracking-widest uppercase transition-colors border border-[#1e2438] hover:border-[#8a9ab5] rounded px-2 py-1"
+          >
+            Export CSV
+          </button>
+          <button
+            onClick={exportText}
+            className="text-[#8a9ab5] hover:text-[#edf0f5] font-mono text-[9px] tracking-widest uppercase transition-colors border border-[#1e2438] hover:border-[#8a9ab5] rounded px-2 py-1"
+          >
+            {copyLabel}
           </button>
           {plan.tables.length > 0 && (
             <button
