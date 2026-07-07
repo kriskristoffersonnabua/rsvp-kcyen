@@ -26,8 +26,24 @@ function genId() {
   return Math.random().toString(36).slice(2, 10);
 }
 
-function TableCard({ table, guests, unassignedGuests, onMouseDown, onRemove, onUnassign, onResizeStart, onToggleMinimize, onStartAssign, isAssigning }) {
+function TableCard({ table, guests, unassignedGuests, onMouseDown, onRemove, onUnassign, onResizeStart, onToggleMinimize, onStartAssign, isAssigning, onRename }) {
   const filled = (table.guestIds ?? []).length;
+  const [editingName, setEditingName] = useState(false);
+  const [nameValue, setNameValue] = useState(table.name);
+  const nameInputRef = useRef(null);
+
+  useEffect(() => {
+    if (editingName) {
+      setNameValue(table.name);
+      setTimeout(() => nameInputRef.current?.select(), 0);
+    }
+  }, [editingName, table.name]);
+
+  function commitRename() {
+    const trimmed = nameValue.trim();
+    if (trimmed && trimmed !== table.name) onRename(trimmed);
+    setEditingName(false);
+  }
   const empty = Math.max(0, table.capacity - filled);
   const width = table.width ?? 180;
   const height = table.height ?? null;
@@ -130,26 +146,75 @@ function TableCard({ table, guests, unassignedGuests, onMouseDown, onRemove, onU
         className="flex items-center justify-between px-2.5 py-1.5 rounded-t cursor-grab active:cursor-grabbing"
         style={{ background: "linear-gradient(135deg, #a02040 0%, #6e1530 100%)", boxShadow: "0 2px 4px rgba(0,0,0,0.4)" }}
       >
-        <span className="text-white font-mono text-[11px] tracking-widest uppercase truncate mr-2" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>
-          {table.name}
-        </span>
+        {editingName ? (
+          <input
+            ref={nameInputRef}
+            value={nameValue}
+            onChange={(e) => setNameValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") commitRename();
+              else if (e.key === "Escape") setEditingName(false);
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
+            className="bg-transparent border-b border-white/60 text-white font-mono text-[11px] tracking-widest uppercase outline-none truncate mr-2 w-full"
+            style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}
+          />
+        ) : (
+          <span
+            className="text-white font-mono text-[11px] tracking-widest uppercase truncate mr-2"
+            style={{ textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}
+          >
+            {table.name}
+          </span>
+        )}
         <div className="flex items-center gap-1.5 shrink-0">
           <span className="text-white/70 font-mono text-[9px]">{filled}/{table.capacity}</span>
-          <button
-            onMouseDown={(e) => e.stopPropagation()}
-            onClick={onToggleMinimize}
-            className="text-white/60 hover:text-white font-mono text-[10px] leading-none"
-            title="Minimize"
-          >
-            ⊖
-          </button>
-          <button
-            onMouseDown={(e) => e.stopPropagation()}
-            onClick={onRemove}
-            className="text-white/60 hover:text-white font-mono text-[10px] leading-none"
-          >
-            ✕
-          </button>
+          {editingName ? (
+            <>
+              <button
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={commitRename}
+                className="text-white/60 hover:text-white font-mono text-[10px] leading-none"
+                title="Save"
+              >
+                ✓
+              </button>
+              <button
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={() => setEditingName(false)}
+                className="text-white/60 hover:text-white font-mono text-[10px] leading-none"
+                title="Cancel rename"
+              >
+                ✕
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={() => setEditingName(true)}
+                className="text-white/60 hover:text-white font-mono text-[10px] leading-none"
+                title="Rename table"
+              >
+                ✎
+              </button>
+              <button
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={onToggleMinimize}
+                className="text-white/60 hover:text-white font-mono text-[10px] leading-none"
+                title="Minimize"
+              >
+                ⊖
+              </button>
+              <button
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={onRemove}
+                className="text-white/60 hover:text-white font-mono text-[10px] leading-none"
+              >
+                ✕
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -250,6 +315,7 @@ TableCard.propTypes = {
   onToggleMinimize: PropTypes.func.isRequired,
   onStartAssign: PropTypes.func.isRequired,
   isAssigning: PropTypes.bool,
+  onRename: PropTypes.func.isRequired,
 };
 
 export default function FloorPlanTab({ guests }) {
@@ -266,6 +332,7 @@ export default function FloorPlanTab({ guests }) {
   const [assigningTableId, setAssigningTableId] = useState(null);
   const [assignSearch, setAssignSearch] = useState("");
   const searchRef = useRef(null);
+  const resultRefs = useRef([]);
   const canvasRef = useRef(null);
   const bgInputRef = useRef(null);
 
@@ -368,6 +435,13 @@ export default function FloorPlanTab({ guests }) {
       tables: p.tables.map((t) =>
         t.id === tableId ? { ...t, guestIds: (t.guestIds ?? []).filter((id) => id !== guestId) } : t
       ),
+    }));
+  }
+
+  function renameTable(tableId, newTableName) {
+    setPlan((p) => ({
+      ...p,
+      tables: p.tables.map((t) => t.id === tableId ? { ...t, name: newTableName } : t),
     }));
   }
 
@@ -826,6 +900,7 @@ export default function FloorPlanTab({ guests }) {
               onToggleMinimize={() => toggleMinimize(table.id)}
               onStartAssign={() => startAssign(table.id)}
               isAssigning={assigningTableId === table.id}
+              onRename={(name) => renameTable(table.id, name)}
             />
           ))}
         </div>
@@ -867,11 +942,17 @@ export default function FloorPlanTab({ guests }) {
                   onChange={(e) => setAssignSearch(e.target.value)}
                   placeholder="Search guest..."
                   className="w-full bg-[#0c0d10] border border-[#1e2438] focus:border-[#8C2038] rounded px-2 py-1 font-mono text-[10px] text-[#edf0f5] placeholder:text-[#2e3548] outline-none"
+                  onKeyDown={(e) => {
+                    if ((e.key === "Tab" || e.key === "ArrowDown") && resultRefs.current[0]) {
+                      e.preventDefault();
+                      resultRefs.current[0].focus();
+                    }
+                  }}
                 />
               </div>
 
               {/* Guest list */}
-              <div className="flex-1 overflow-y-auto py-1">
+              <div className="flex-1 overflow-y-auto py-1" onFocus={(e) => e.target.scrollIntoView({ block: "nearest" })}>
                 {(() => {
                   const q = assignSearch.trim().toLowerCase();
                   const filtered = q
@@ -890,17 +971,41 @@ export default function FloorPlanTab({ guests }) {
                     );
                   }
 
-                  return filtered.map((g) => (
+                  resultRefs.current = [];
+                  return filtered.map((g, i) => (
                     <div
                       key={g.id}
-                      className={`px-3 py-1.5 border-b border-[#1e2438]/30 flex items-center justify-between gap-1 ${assigningTableId ? "cursor-pointer hover:bg-[#8C2038]/10 group" : ""}`}
+                      ref={(el) => (resultRefs.current[i] = el)}
+                      tabIndex={0}
+                      className={`px-3 py-1.5 border-b border-[#1e2438]/30 flex items-center justify-between gap-1 outline-none ${assigningTableId ? "cursor-pointer hover:bg-[#8C2038]/10 focus:bg-[#8C2038]/20" : ""}`}
                       onClick={() => assigningTableId && assignGuest(assigningTableId, g.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && assigningTableId) {
+                          e.preventDefault();
+                          assignGuest(assigningTableId, g.id);
+                        } else if (e.key === "ArrowDown") {
+                          e.preventDefault();
+                          resultRefs.current[i + 1]?.focus();
+                        } else if (e.key === "ArrowUp") {
+                          e.preventDefault();
+                          if (i === 0) searchRef.current?.focus();
+                          else resultRefs.current[i - 1]?.focus();
+                        } else if (e.key === "Tab" && !e.shiftKey) {
+                          e.preventDefault();
+                          if (resultRefs.current[i + 1]) resultRefs.current[i + 1].focus();
+                          else searchRef.current?.focus();
+                        } else if (e.key === "Tab" && e.shiftKey) {
+                          e.preventDefault();
+                          if (i === 0) searchRef.current?.focus();
+                          else resultRefs.current[i - 1]?.focus();
+                        }
+                      }}
                     >
-                      <p className={`font-mono text-[10px] truncate transition-colors ${assigningTableId ? "text-[#edf0f5] group-hover:text-white" : "text-[#8a9ab5]"}`}>
+                      <p className={`font-mono text-[10px] truncate transition-colors ${assigningTableId ? "text-[#edf0f5] focus:text-white" : "text-[#8a9ab5]"}`}>
                         {g.firstName} {g.lastName}
                       </p>
                       {assigningTableId && (
-                        <span className="text-[#8C2038] font-mono text-[9px] shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">+</span>
+                        <span className="text-[#8C2038] font-mono text-[9px] shrink-0 opacity-0 hover:opacity-100 focus:opacity-100 transition-opacity">+</span>
                       )}
                     </div>
                   ));
@@ -911,6 +1016,7 @@ export default function FloorPlanTab({ guests }) {
               {assigningTableId && (
                 <div className="px-2 py-2 border-t border-[#1e2438]">
                   <button
+                    tabIndex={-1}
                     onClick={() => { setAssigningTableId(null); setAssignSearch(""); }}
                     className="w-full text-center font-mono text-[9px] tracking-widest uppercase text-[#6b7a90] hover:text-[#edf0f5] transition-colors"
                   >
