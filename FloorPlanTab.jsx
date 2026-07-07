@@ -448,6 +448,11 @@ export default function FloorPlanTab({ guests }) {
   function handleBgUpload(e) {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (!["image/png", "image/jpeg"].includes(file.type)) {
+      alert("Only PNG or JPEG images are allowed.");
+      e.target.value = "";
+      return;
+    }
     const reader = new FileReader();
     reader.onload = (ev) => {
       const dataUrl = ev.target.result;
@@ -709,12 +714,12 @@ export default function FloorPlanTab({ guests }) {
 
         {/* Background image controls */}
         <div className="flex flex-col gap-1">
-          <label className="text-[#8a9ab5] font-mono text-[9px] tracking-widest uppercase">Background</label>
+          <label className="text-[#8a9ab5] font-mono text-[9px] tracking-widest uppercase">Floor Plan Image</label>
           <div className="flex gap-2">
             <input
               ref={bgInputRef}
               type="file"
-              accept="image/*"
+              accept="image/png,image/jpeg"
               onChange={handleBgUpload}
               className="hidden"
             />
