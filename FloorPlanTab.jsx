@@ -348,10 +348,6 @@ export default function FloorPlanTab({ guests }) {
           setPlan({ tables: remote.tables });
           savePlan({ tables: remote.tables });
         }
-        if (remote.bgImage) {
-          setBgImage(remote.bgImage);
-          localStorage.setItem(BG_STORAGE_KEY, remote.bgImage);
-        }
         if (remote.bgOrientation) {
           setBgOrientation(remote.bgOrientation);
           localStorage.setItem(BG_ORIENTATION_KEY, remote.bgOrientation);
@@ -364,7 +360,10 @@ export default function FloorPlanTab({ guests }) {
   useEffect(() => {
     savePlan(plan);
     const t = setTimeout(() => {
-      saveFloorPlan({ tables: plan.tables, bgImage, bgOrientation }).catch(() => {});
+      // bgImage (base64) is too large for Firebase Realtime Database — keep it in localStorage only
+      saveFloorPlan({ tables: plan.tables, bgOrientation }).catch((err) => {
+        console.error("Floor plan save failed:", err);
+      });
     }, 1500);
     return () => clearTimeout(t);
   }, [plan, bgImage, bgOrientation]);
