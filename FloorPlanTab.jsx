@@ -483,6 +483,15 @@ export default function FloorPlanTab({ guests }) {
     }));
   }
 
+  function minimizeAll() {
+    setPlan((p) => ({
+      ...p,
+      tables: p.tables.map((t) =>
+        (t.minimized ?? false) ? t : { ...t, minimized: true, miniSize: t.miniSize ?? 64 }
+      ),
+    }));
+  }
+
   function handleMouseMove(e) {
     if (dragging) {
       const rect = canvasRef.current.getBoundingClientRect();
@@ -789,6 +798,13 @@ export default function FloorPlanTab({ guests }) {
           className="bg-[#8C2038] hover:bg-[#711830] text-white font-mono text-[10px] tracking-widest uppercase h-8 px-4"
         >
           Add Table
+        </Button>
+        <Button
+          onClick={minimizeAll}
+          title="Minimize all tables"
+          className="bg-[#1e2438] hover:bg-[#2a3050] text-[#8a9ab5] hover:text-[#edf0f5] font-mono text-[10px] tracking-widest uppercase h-8 px-3 border border-[#2a3050]"
+        >
+          Close All
         </Button>
 
         {/* Background image controls */}
