@@ -138,7 +138,7 @@ function TableCard({ table, guests, unassignedGuests, onMouseDown, onRemove, onU
   return (
     <div
       className="absolute select-none"
-      style={{ left: table.x, top: table.y, width, ...(height ? { height, overflow: "hidden" } : {}) }}
+      style={{ left: table.x, top: table.y, width, ...(height ? { height, overflow: "hidden" } : {}), ...(table.miniSize ? { transform: `translateY(calc(-100% + ${table.miniSize}px))` } : {}) }}
     >
       {/* Title bar – draggable */}
       <div
@@ -471,9 +471,15 @@ export default function FloorPlanTab({ guests }) {
   function toggleMinimize(tableId) {
     setPlan((p) => ({
       ...p,
-      tables: p.tables.map((t) =>
-        t.id === tableId ? { ...t, minimized: !(t.minimized ?? false) } : t
-      ),
+      tables: p.tables.map((t) => {
+        if (t.id !== tableId) return t;
+        const wasMinimized = t.minimized ?? false;
+        if (!wasMinimized) {
+          // Record miniSize when minimizing so expand-from-circle transform works
+          return { ...t, minimized: true, miniSize: t.miniSize ?? 64 };
+        }
+        return { ...t, minimized: false };
+      }),
     }));
   }
 
