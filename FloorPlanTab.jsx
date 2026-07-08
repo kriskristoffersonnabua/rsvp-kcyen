@@ -55,7 +55,7 @@ function TableCard({ table, guests, unassignedGuests, onMouseDown, onRemove, onU
     return (
       <div
         className="absolute select-none group"
-        style={{ left: table.x, top: table.y, width: miniSize }}
+        style={{ left: table.x, top: table.y, width: miniSize, zIndex: 1 }}
       >
         {/* Circle – draggable */}
         <div
@@ -138,7 +138,7 @@ function TableCard({ table, guests, unassignedGuests, onMouseDown, onRemove, onU
   return (
     <div
       className="absolute select-none"
-      style={{ left: table.x, top: table.y, width, ...(height ? { height, overflow: "hidden" } : {}), ...(table.miniSize ? { transform: `translateY(calc(-100% + ${table.miniSize}px))` } : {}) }}
+      style={{ left: table.x, top: table.y, width, zIndex: 10, ...(height ? { height, overflow: "hidden" } : {}) }}
     >
       {/* Title bar – draggable */}
       <div
